@@ -42,7 +42,7 @@ public class Credentials {
     }
 
     public String getUserInfo() throws UnsupportedEncodingException {
-        return String.format("%s:%s", user, URLEncoder.encode(password, "UTF-8"));
+        return String.format("%s:%s", URLEncoder.encode(user, "UTF-8"), URLEncoder.encode(password, "UTF-8"));
     }
 
     public void validate(ValidationResultMessage validationResultMessage) {

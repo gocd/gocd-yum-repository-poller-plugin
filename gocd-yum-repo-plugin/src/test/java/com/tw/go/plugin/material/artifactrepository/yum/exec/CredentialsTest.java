@@ -23,7 +23,6 @@ import org.junit.Test;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.matchers.JUnitMatchers.hasItem;
 
 public class CredentialsTest {
     @Test
@@ -36,6 +35,12 @@ public class CredentialsTest {
     public void shouldGetUserInfoWithEscapedPassword() throws Exception {
         Credentials credentials = new Credentials("user", "!password@:");
         assertThat(credentials.getUserInfo(), is("user:%21password%40%3A"));
+    }
+
+    @Test
+    public void shouldEncodeURLCorrectlyWhenUsernameIsEmailAddress() throws Exception {
+        Credentials credentials = new Credentials("user@example.com", "!password@:");
+        assertThat(credentials.getUserInfo(), is("user%40example.com:%21password%40%3A"));
     }
 
     @Test
