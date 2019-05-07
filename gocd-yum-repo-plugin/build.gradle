@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 dependencies {
   compile project(':plugin-common')
   compileOnly group: 'cd.go.plugin', name: 'go-plugin-api', version: '17.7.0'
@@ -33,18 +32,6 @@ sourceSets {
     java {
       compileClasspath += configurations.compileOnly
       runtimeClasspath += configurations.compileOnly
-    }
-  }
-}
-
-processResources {
-  from("src/main/resource-templates") {
-    filesMatching('plugin.xml') {
-      expand project.pluginDesc
-    }
-
-    filesMatching('plugin.properties') {
-      expand project.pluginDesc
     }
   }
 }
