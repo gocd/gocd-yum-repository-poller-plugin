@@ -18,12 +18,13 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
   id = 'yum'
-  pluginVersion = '2.0.4'
+  pluginVersion = '2.0.5'
   goCdVersion = '15.2.0'
   name = 'Yum Plugin'
   description = 'Plugin that polls a yum repository'
   vendorName = 'ThoughtWorks Go Team'
   vendorUrl = 'https://github.com/gocd/gocd-yum-repository-poller-plugin'
+  targetOs = ['Linux']
 
   githubRepo {
     owner = System.getenv('GITHUB_USER') ?: 'bob'

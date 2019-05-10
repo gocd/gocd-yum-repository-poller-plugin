@@ -1,3 +1,6 @@
+# Changelog is now moved to the GitHub releases page of this plugin
+
+
 # 2.0.3
 
 - Cleanup the build script. No changes in functionality
