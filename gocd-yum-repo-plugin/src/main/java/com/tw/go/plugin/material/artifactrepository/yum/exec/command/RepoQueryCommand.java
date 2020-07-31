@@ -22,18 +22,26 @@ import com.tw.go.plugin.material.artifactrepository.yum.exec.Constants;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.YumEnvironmentMap;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.PackageRevisionMessage;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 
 public class RepoQueryCommand {
     static final String DELIMITER = "<=>";
+    private static final SimpleDateFormat RHEL_8_DATE_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private final ProcessRunner processRunner;
-    private static Logger LOGGER = Logger.getLoggerFor(RepoQueryCommand.class);
+    private static final Logger LOGGER = Logger.getLoggerFor(RepoQueryCommand.class);
     private final com.tw.go.plugin.material.artifactrepository.yum.exec.command.RepoQueryParams params;
+
+    static {
+        RHEL_8_DATE_FMT.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     public RepoQueryCommand(RepoQueryParams params) {
         this(new ProcessRunner(), params);
@@ -55,9 +63,9 @@ public class RepoQueryCommand {
                 "--qf",
                 "%{RELATIVEPATH}" + DELIMITER + "%{NAME}" + DELIMITER + "%{VERSION}" + DELIMITER + "%{RELEASE}" +
                         DELIMITER + "%{ARCH}" + DELIMITER + "%{BUILDTIME}" + DELIMITER + "%{PACKAGER}" + DELIMITER + "%{LOCATION}" +
-                        DELIMITER + "%{URL}" + DELIMITER + "%{BUILDHOST}"};
+                        DELIMITER + "%{URL}"};
 
-        ProcessOutput processOutput = null;
+        ProcessOutput processOutput;
         synchronized (params.getRepoId().intern()) {
             processOutput = processRunner.execute(command, yumEnvironmentMap.buildYumEnvironmentMap());
         }
@@ -75,10 +83,9 @@ public class RepoQueryCommand {
 
     private PackageRevisionMessage parseOutput(ProcessOutput processOutput) {
         if (processOutput.getStdOut().size() > 1) {
-            List<String> results = new ArrayList<String>();
+            List<String> results = new ArrayList<>();
             List<String> stdOut = processOutput.getStdOut();
-            for (int i = 0, stdOutSize = stdOut.size(); i < stdOutSize; i++) {
-                String output = stdOut.get(i);
+            for (String output : stdOut) {
                 String[] parts = output.split(DELIMITER);
                 String fileName = parts[0].substring(parts[0].lastIndexOf('/') + 1);
                 results.add(fileName);
@@ -98,11 +105,26 @@ public class RepoQueryCommand {
         String packager = packageTagValue(parts[6]);
         String location = packageTagValue(parts[7]);
         String trackbackUrl = packageTagValue(parts[8]);
-        String buildHost = packageTagValue(parts[9]);
         String packageName = format("%s-%s-%s.%s", name, version, release, arch);
-        //converting from epoch time
-        long timeInMillis = parseLong(buildTime) * 1000;
-        PackageRevisionMessage packageRevision = new PackageRevisionMessage(packageName, new Date(timeInMillis), packager, buildHost != null ? "Built on " + buildHost : null, trackbackUrl);
+
+        Date timestamp;
+
+        if (buildTime.matches("^\\d+$")) {
+            //converting from epoch time
+            long timeInMillis = parseLong(buildTime) * 1000;
+            timestamp = new Date(timeInMillis);
+        } else if (buildTime.matches("^[\\d]{4}-[\\d]{2}-[\\d]{2} [\\d]{1,2}:[\\d]{2}$")) {
+            // RHEL 8
+            try {
+                timestamp = RHEL_8_DATE_FMT.parse(buildTime);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException(format("Failed to parse buildTime `%s` according to format: %s", buildTime, RHEL_8_DATE_FMT.toPattern()), e);
+            }
+        } else {
+            throw new IllegalArgumentException(format("Don't know how to parse buildTime: %s", buildTime));
+        }
+
+        PackageRevisionMessage packageRevision = new PackageRevisionMessage(packageName, timestamp, packager, null, trackbackUrl);
         try {
             packageRevision.addData(Constants.PACKAGE_LOCATION, location);
         } catch (RuntimeException e) {

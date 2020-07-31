@@ -18,33 +18,42 @@ package com.tw.go.plugin.material.artifactrepository.yum.exec.command;
 
 import org.apache.commons.io.IOUtils;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import java.util.function.Supplier;
 
 public class ProcessRunner {
     public ProcessOutput execute(String[] command, Map<String, String> envMap) {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         Process process = null;
-        ProcessOutput processOutput = null;
+        ProcessOutput processOutput;
         try {
             processBuilder.environment().putAll(envMap);
             process = processBuilder.start();
             int returnCode = process.waitFor();
-            List outputStream = IOUtils.readLines(process.getInputStream());
-            List errorStream = IOUtils.readLines(process.getErrorStream());
+            List<String> outputStream = IOUtils.readLines(process.getInputStream(), Charset.defaultCharset());
+            List<String> errorStream = IOUtils.readLines(process.getErrorStream(), Charset.defaultCharset());
             processOutput = new ProcessOutput(returnCode, outputStream, errorStream);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         } finally {
             if (process != null) {
-                closeQuietly(process.getInputStream());
-                closeQuietly(process.getErrorStream());
-                closeQuietly(process.getOutputStream());
+                closeQuietly(process::getInputStream);
+                closeQuietly(process::getErrorStream);
+                closeQuietly(process::getOutputStream);
                 process.destroy();
             }
         }
         return processOutput;
+    }
+
+    private void closeQuietly(Supplier<AutoCloseable> fn) {
+        //noinspection EmptyTryBlock
+        try (final AutoCloseable ignored = fn.get()) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

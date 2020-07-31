@@ -21,25 +21,19 @@ import com.tw.go.plugin.material.artifactrepository.yum.exec.Constants;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.RepoUrl;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.RepoqueryCacheCleaner;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.PackageRevisionMessage;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.*;
 
 import static com.tw.go.plugin.material.artifactrepository.yum.exec.command.RepoQueryCommand.DELIMITER;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class RepoQueryCommandTest {
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         RepoqueryCacheCleaner.performCleanup();
     }
@@ -53,18 +47,17 @@ public class RepoQueryCommandTest {
         String repoFromPath = repoid + "," + repourl;
         String[] expectedCommand = repoQueryCommand(repoid, spec, repoFromPath);
 
-        ArrayList<String> stdOut = new ArrayList<String>();
+        ArrayList<String> stdOut = new ArrayList<>();
         long time = 5;
-        stdOut.add(repoQueryOutput(time, "packager", "http://location", "http://jenkins.job", "ca.hostname"));
-        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<String>()));
+        stdOut.add(repoQueryOutput(time, "packager", "http://location", "http://jenkins.job"));
+        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<>()));
         PackageRevisionMessage packageRevision = new RepoQueryCommand(processRunner, new RepoQueryParams(repoid, new RepoUrl(repourl, null, null), spec)).execute();
 
-        assertThat(packageRevision.getRevision(), is("name-version-release.arch"));
-        assertThat(packageRevision.getTimestamp(), is(new Date(5000)));
-        assertThat(packageRevision.getUser(), is("packager"));
-        assertThat(packageRevision.getData().get(Constants.PACKAGE_LOCATION), is("http://location"));
-        assertThat(packageRevision.getTrackbackUrl(), is("http://jenkins.job"));
-        assertThat(packageRevision.getRevisionComment(), is("Built on ca.hostname"));
+        assertEquals("name-version-release.arch", packageRevision.getRevision());
+        assertEquals(new Date(5000), packageRevision.getTimestamp());
+        assertEquals("packager", packageRevision.getUser());
+        assertEquals("http://location", packageRevision.getData().get(Constants.PACKAGE_LOCATION));
+        assertEquals("http://jenkins.job", packageRevision.getTrackbackUrl());
         verify(processRunner).execute(expectedCommand, envMapWithDefaultValues(repoid));
     }
 
@@ -77,33 +70,33 @@ public class RepoQueryCommandTest {
         String repoFromPath = repoid + "," + repourl;
         String[] expectedCommand = repoQueryCommand(repoid, spec, repoFromPath);
 
-        ArrayList<String> stdOut = new ArrayList<String>();
+        ArrayList<String> stdOut = new ArrayList<>();
         long time = 5;
-        stdOut.add(repoQueryOutput(time, "None", "NONE", "NOne", "none"));
+        stdOut.add(repoQueryOutput(time, "None", "NONE", "NOne"));
 
-        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<String>()));
+        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<>()));
         PackageRevisionMessage packageRevision = new RepoQueryCommand(processRunner, new RepoQueryParams(repoid, new RepoUrl(repourl, null, null), spec)).execute();
 
-        assertThat(packageRevision.getRevision(), is("name-version-release.arch"));
-        assertThat(packageRevision.getTimestamp(), is(new Date(5000)));
-        assertThat(packageRevision.getUser(), is(nullValue()));
-        assertThat(packageRevision.getData().get(Constants.PACKAGE_LOCATION), is(nullValue()));
-        assertThat(packageRevision.getTrackbackUrl(), is(nullValue()));
-        assertThat(packageRevision.getRevisionComment(), is(nullValue()));
+        assertEquals("name-version-release.arch", packageRevision.getRevision());
+        assertEquals(new Date(5000), packageRevision.getTimestamp());
+        assertNull(packageRevision.getUser());
+        assertNull(packageRevision.getData().get(Constants.PACKAGE_LOCATION));
+        assertNull(packageRevision.getTrackbackUrl());
+        assertNull(packageRevision.getRevisionComment());
         verify(processRunner).execute(expectedCommand, envMapWithDefaultValues(repoid));
     }
 
     @Test
     public void shouldThrowExceptionIfCommandFails() {
         ProcessRunner processRunner = mock(ProcessRunner.class);
-        ArrayList<String> stdErr = new ArrayList<String>();
+        ArrayList<String> stdErr = new ArrayList<>();
         stdErr.add("err msg");
-        when(processRunner.execute(Matchers.<String[]>any(), Matchers.<Map<String, String>>any())).thenReturn(new ProcessOutput(1, null, stdErr));
+        when(processRunner.execute(any(), any())).thenReturn(new ProcessOutput(1, null, stdErr));
         try {
             new RepoQueryCommand(processRunner, new RepoQueryParams("repoid", new RepoUrl("http://url", null, null), "spec")).execute();
             fail("expected exception");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Error while querying repository with path 'http://url' and package spec 'spec'. Error Message: err msg"));
+            assertEquals("Error while querying repository with path 'http://url' and package spec 'spec'. Error Message: err msg", e.getMessage());
         }
     }
 
@@ -116,13 +109,13 @@ public class RepoQueryCommandTest {
         String repoFromPath = "repoid,http://username:%214321abcd@repohost:1111/some/path";
         String[] expectedCommand = repoQueryCommand(repoid, spec, repoFromPath);
 
-        ArrayList<String> stdOut = new ArrayList<String>();
+        ArrayList<String> stdOut = new ArrayList<>();
         long time = 5;
-        stdOut.add(repoQueryOutput(time, "packager", "http://location", "http://jenkins.job", "ca.hostname"));
-        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<String>()));
+        stdOut.add(repoQueryOutput(time, "packager", "http://location", "http://jenkins.job"));
+        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<>()));
         RepoQueryParams params = new RepoQueryParams(repoid, new RepoUrl(repourl, "username", "!4321abcd"), spec);
         PackageRevisionMessage packageRevision = new RepoQueryCommand(processRunner, params).execute();
-        assertThat(packageRevision, is(not(nullValue())));
+        assertNotNull(packageRevision);
         verify(processRunner).execute(expectedCommand, envMapWithDefaultValues(repoid));
     }
 
@@ -135,14 +128,14 @@ public class RepoQueryCommandTest {
         String repoFromPath = "repoid,http://username:%214321abcd@repohost:1111/some/path";
         String[] expectedCommand = repoQueryCommand(repoid, spec, repoFromPath);
 
-        ArrayList<String> stdOut = new ArrayList<String>();
+        ArrayList<String> stdOut = new ArrayList<>();
         long time = 5;
-        stdOut.add(repoQueryOutput(time, "packager", "http://foo.com/bar", "http://jenkins.job", "ca.hostname"));
+        stdOut.add(repoQueryOutput(time, "packager", "http://foo.com/bar", "http://jenkins.job"));
 
-        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<String>()));
+        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<>()));
         RepoQueryParams params = new RepoQueryParams(repoid, new RepoUrl(repourl, "username", "!4321abcd"), spec);
         PackageRevisionMessage packageRevision = new RepoQueryCommand(processRunner, params).execute();
-        assertThat(packageRevision.getData().get(Constants.PACKAGE_LOCATION), is("http://foo.com/bar"));
+        assertEquals("http://foo.com/bar", packageRevision.getData().get(Constants.PACKAGE_LOCATION));
         verify(processRunner).execute(expectedCommand, envMapWithDefaultValues(repoid));
     }
 
@@ -155,20 +148,20 @@ public class RepoQueryCommandTest {
         String repoFromPath = "repoid,http://username:%214321abcd@repohost:1111/some/path";
         String[] expectedCommand = repoQueryCommand(repoid, spec, repoFromPath);
 
-        ArrayList<String> stdOut = new ArrayList<String>();
+        ArrayList<String> stdOut = new ArrayList<>();
         long time = 5;
 
         stdOut.add("getPackage/go-agent-13.1.0-13422.noarch.rpm" + DELIMITER + "go-agent" + DELIMITER + "13.1.0" + DELIMITER + "13422" + DELIMITER + "noarch" + DELIMITER + time + DELIMITER + "packager" + DELIMITER + "http://foo.com/bar"
                 + DELIMITER + "trackback" + DELIMITER + "revision Comment");
         stdOut.add("getPackage/go-agent-13.1.0-13422.x86_64.rpm" + DELIMITER + "go-agent" + DELIMITER + "13.1.0" + DELIMITER + "13422" + DELIMITER + "x86_64" + DELIMITER + time + DELIMITER + "packager" +
                 DELIMITER + "http://foo.com/bar" + DELIMITER + "trackback" + DELIMITER + "revision Comment");
-        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<String>()));
+        when(processRunner.execute(expectedCommand, envMapWithDefaultValues(repoid))).thenReturn(new ProcessOutput(0, stdOut, new ArrayList<>()));
         RepoQueryParams params = new RepoQueryParams(repoid, new RepoUrl(repourl, "username", "!4321abcd"), spec);
         try {
             new RepoQueryCommand(processRunner, params).execute();
             fail("expected failure");
         } catch (Exception e) {
-            assertThat(e.getMessage(), containsString("Given Package Spec (go-agent) resolves to more than one file on the repository: go-agent-13.1.0-13422.noarch.rpm, go-agent-13.1.0-13422.x86_64.rpm"));
+            assertTrue(e.getMessage().contains("Given Package Spec (go-agent) resolves to more than one file on the repository: go-agent-13.1.0-13422.noarch.rpm, go-agent-13.1.0-13422.x86_64.rpm"));
             verify(processRunner).execute(expectedCommand, envMapWithDefaultValues(repoid));
         }
     }
@@ -176,13 +169,9 @@ public class RepoQueryCommandTest {
     @Test
     public void shouldHandleMultipleThreads() throws InterruptedException {
         final StringBuilder errors = new StringBuilder();
-        Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
-            public void uncaughtException(Thread t, Throwable e) {
-                errors.append(t.getName() + " : " + e.getMessage());
-            }
-        };
+        Thread.UncaughtExceptionHandler handler = (t, e) -> errors.append(t.getName()).append(" : ").append(e.getMessage());
         String repoId = UUID.randomUUID().toString();
-        ArrayList<Thread> threads = new ArrayList<Thread>();
+        ArrayList<Thread> threads = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Thread thread = new Thread(new CommandThread(repoId));
             thread.setUncaughtExceptionHandler(handler);
@@ -198,8 +187,8 @@ public class RepoQueryCommandTest {
         }
     }
 
-    private String repoQueryOutput(long time, String packager, String location, String trackbackUrl, String buildHost) {
-        return "relativepath" + DELIMITER + "name" + DELIMITER + "version" + DELIMITER + "release" + DELIMITER + "arch" + DELIMITER + time + DELIMITER + packager + DELIMITER + location + DELIMITER + trackbackUrl + DELIMITER + buildHost;
+    private String repoQueryOutput(long time, String packager, String location, String trackbackUrl) {
+        return "relativepath" + DELIMITER + "name" + DELIMITER + "version" + DELIMITER + "release" + DELIMITER + "arch" + DELIMITER + time + DELIMITER + packager + DELIMITER + location + DELIMITER + trackbackUrl;
     }
 
     private String[] repoQueryCommand(String repoid, String spec, String repoFromPath) {
@@ -209,19 +198,19 @@ public class RepoQueryCommandTest {
                 "-q",
                 spec,
                 "--qf",
-                "%{RELATIVEPATH}" + DELIMITER + "%{NAME}" + DELIMITER + "%{VERSION}" + DELIMITER + "%{RELEASE}" + DELIMITER + "%{ARCH}" + DELIMITER + "%{BUILDTIME}" + DELIMITER + "%{PACKAGER}" + DELIMITER + "%{LOCATION}" + DELIMITER + "%{URL}" + DELIMITER + "%{BUILDHOST}"};
+                "%{RELATIVEPATH}" + DELIMITER + "%{NAME}" + DELIMITER + "%{VERSION}" + DELIMITER + "%{RELEASE}" + DELIMITER + "%{ARCH}" + DELIMITER + "%{BUILDTIME}" + DELIMITER + "%{PACKAGER}" + DELIMITER + "%{LOCATION}" + DELIMITER + "%{URL}"};
     }
 
     private Map<String, String> envMapWithDefaultValues(String repoid) {
-        Map<String, String> expectedEnvMap = new HashMap<String, String>();
+        Map<String, String> expectedEnvMap = new HashMap<>();
         expectedEnvMap.put("HOME", System.getenv("HOME"));
         expectedEnvMap.put("TMPDIR", String.format("/var/tmp/go-yum-plugin-%s", repoid));
         return expectedEnvMap;
     }
 
-    class CommandThread implements Runnable {
-        private String repoId;
-        private String repoUrl;
+    static class CommandThread implements Runnable {
+        private final String repoId;
+        private final String repoUrl;
 
         CommandThread(String repoId) {
             this.repoId = repoId;
@@ -233,7 +222,7 @@ public class RepoQueryCommandTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         RepoqueryCacheCleaner.performCleanup();
     }

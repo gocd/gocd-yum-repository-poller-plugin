@@ -16,13 +16,12 @@
 
 package com.tw.go.plugin.material.artifactrepository.yum.exec;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class FileBasedConnectionCheckerTest {
 
@@ -39,7 +38,7 @@ public class FileBasedConnectionCheckerTest {
             new FileBasedConnectionChecker().checkConnection("file://" + absolutePath, new Credentials("user", "pwd"));
             fail("should fail");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("File protocol does not support username and/or password."));
+            assertEquals("File protocol does not support username and/or password.", e.getMessage());
         }
     }
 
@@ -49,7 +48,7 @@ public class FileBasedConnectionCheckerTest {
             new FileBasedConnectionChecker().checkConnection("file://foo", new Credentials(null, null));
             fail("should fail");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Invalid file path."));
+            assertEquals("Invalid file path.", e.getMessage());
         }
     }
 }

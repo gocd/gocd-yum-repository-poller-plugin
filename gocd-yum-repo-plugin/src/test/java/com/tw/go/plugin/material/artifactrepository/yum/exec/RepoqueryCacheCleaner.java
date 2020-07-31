@@ -19,18 +19,15 @@ package com.tw.go.plugin.material.artifactrepository.yum.exec;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 
-public class RepoqueryCacheCleaner{
+public class RepoqueryCacheCleaner {
     public static void performCleanup() throws IOException {
-        File[] cacheFiles = new File("/var/tmp/").listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.startsWith("go-yum-plugin-");
+        File[] cacheFiles = new File("/var/tmp/").listFiles((dir, name) -> name.startsWith("go-yum-plugin-"));
+        if (null != cacheFiles) {
+            for (File cacheFile : cacheFiles) {
+                FileUtils.forceDelete(cacheFile);
             }
-        });
-        for(File cacheFile : cacheFiles){
-            FileUtils.forceDelete(cacheFile);
         }
     }
 

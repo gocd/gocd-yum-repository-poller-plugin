@@ -19,24 +19,21 @@ import com.tw.go.plugin.material.artifactrepository.yum.exec.message.PackageMate
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.PackageMaterialProperty;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.ValidationError;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.ValidationResultMessage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PackageRepositoryConfigurationProviderTest {
 
     private PackageRepositoryConfigurationProvider configurationProvider;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         configurationProvider = new PackageRepositoryConfigurationProvider();
     }
 
@@ -45,44 +42,44 @@ public class PackageRepositoryConfigurationProviderTest {
 
         PackageMaterialProperties configuration = configurationProvider.repositoryConfiguration();
 
-        assertThat(configuration.getProperty(Constants.REPO_URL), notNullValue());
-        assertThat(configuration.getProperty(Constants.REPO_URL).partOfIdentity(), nullValue());
-        assertThat(configuration.getProperty(Constants.REPO_URL).required(), nullValue());
-        assertThat(configuration.getProperty(Constants.REPO_URL).secure(), nullValue());
-        assertThat(configuration.getProperty(Constants.REPO_URL).displayName(), is("Repository URL"));
-        assertThat(configuration.getProperty(Constants.REPO_URL).displayOrder(), is("0"));
+        assertNotNull(configuration.getProperty(Constants.REPO_URL));
+        assertNull(configuration.getProperty(Constants.REPO_URL).partOfIdentity());
+        assertNull(configuration.getProperty(Constants.REPO_URL).required());
+        assertNull(configuration.getProperty(Constants.REPO_URL).secure());
+        assertEquals("Repository URL", configuration.getProperty(Constants.REPO_URL).displayName());
+        assertEquals("0", configuration.getProperty(Constants.REPO_URL).displayOrder());
 
-        assertThat(configuration.getProperty(Constants.USERNAME), notNullValue());
-        assertThat(configuration.getProperty(Constants.USERNAME).partOfIdentity(), is(false));
-        assertThat(configuration.getProperty(Constants.USERNAME).required(), is(false));
-        assertThat(configuration.getProperty(Constants.USERNAME).secure(), nullValue());
-        assertThat(configuration.getProperty(Constants.USERNAME).displayName(), is("User"));
-        assertThat(configuration.getProperty(Constants.USERNAME).displayOrder(), is("1"));
+        assertNotNull(configuration.getProperty(Constants.USERNAME));
+        assertFalse(configuration.getProperty(Constants.USERNAME).partOfIdentity());
+        assertFalse(configuration.getProperty(Constants.USERNAME).required());
+        assertNull(configuration.getProperty(Constants.USERNAME).secure());
+        assertEquals("User", configuration.getProperty(Constants.USERNAME).displayName());
+        assertEquals("1", configuration.getProperty(Constants.USERNAME).displayOrder());
 
-        assertThat(configuration.getProperty(Constants.PASSWORD), notNullValue());
-        assertThat(configuration.getProperty(Constants.PASSWORD).partOfIdentity(), is(false));
-        assertThat(configuration.getProperty(Constants.PASSWORD).required(), is(false));
-        assertThat(configuration.getProperty(Constants.PASSWORD).secure(), is(true));
-        assertThat(configuration.getProperty(Constants.PASSWORD).displayName(), is("Password"));
-        assertThat(configuration.getProperty(Constants.PASSWORD).displayOrder(), is("2"));
+        assertNotNull(configuration.getProperty(Constants.PASSWORD));
+        assertFalse(configuration.getProperty(Constants.PASSWORD).partOfIdentity());
+        assertFalse(configuration.getProperty(Constants.PASSWORD).required());
+        assertTrue(configuration.getProperty(Constants.PASSWORD).secure());
+        assertEquals("Password", configuration.getProperty(Constants.PASSWORD).displayName());
+        assertEquals("2", configuration.getProperty(Constants.PASSWORD).displayOrder());
     }
 
     @Test
     public void shouldGetPackageConfiguration() {
         PackageMaterialProperties configuration = configurationProvider.packageConfiguration();
-        assertThat(configuration.getProperty(Constants.PACKAGE_SPEC), notNullValue());
-        assertThat(configuration.getProperty(Constants.PACKAGE_SPEC).displayName(), is("Package Spec"));
-        assertThat(configuration.getProperty(Constants.PACKAGE_SPEC).displayOrder(), is("0"));
+        assertNotNull(configuration.getProperty(Constants.PACKAGE_SPEC));
+        assertEquals("Package Spec", configuration.getProperty(Constants.PACKAGE_SPEC).displayName());
+        assertEquals("0", configuration.getProperty(Constants.PACKAGE_SPEC).displayOrder());
     }
 
     @Test
     public void shouldCheckIfRepositoryConfigurationValid() {
-        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(new PackageMaterialProperties()), asList(new ValidationError(Constants.REPO_URL, "Repository url not specified")), false);
-        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, null)), asList(new ValidationError(Constants.REPO_URL, "Repository url is empty")), false);
-        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, "")), asList(new ValidationError(Constants.REPO_URL, "Repository url is empty")), false);
-        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, "incorrectUrl")), asList(new ValidationError(Constants.REPO_URL, "Invalid URL : incorrectUrl")), false);
-        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, "http://correct.com/url")), new ArrayList<ValidationError>(), true);
-        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, "http://correct.com/url")), new ArrayList<ValidationError>(), true);
+        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(new PackageMaterialProperties()), singletonList(new ValidationError(Constants.REPO_URL, "Repository url not specified")), false);
+        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, null)), singletonList(new ValidationError(Constants.REPO_URL, "Repository url is empty")), false);
+        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, "")), singletonList(new ValidationError(Constants.REPO_URL, "Repository url is empty")), false);
+        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, "incorrectUrl")), singletonList(new ValidationError(Constants.REPO_URL, "Invalid URL : incorrectUrl")), false);
+        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, "http://correct.com/url")), emptyList(), true);
+        assertConfigurationErrors(configurationProvider.validateRepositoryConfiguration(configurations(Constants.REPO_URL, "http://correct.com/url")), emptyList(), true);
     }
 
     @Test
@@ -91,17 +88,17 @@ public class PackageRepositoryConfigurationProviderTest {
         configurationProvidedByUser.addPackageMaterialProperty(Constants.REPO_URL, new PackageMaterialProperty().withValue("http://correct.com/url"));
         configurationProvidedByUser.addPackageMaterialProperty("invalid-keys", new PackageMaterialProperty().withValue("some value"));
         ValidationResultMessage validationResultMessage = configurationProvider.validateRepositoryConfiguration(configurationProvidedByUser);
-        assertConfigurationErrors(validationResultMessage, asList(new ValidationError("", "Unsupported key(s) found : invalid-keys. Allowed key(s) are : REPO_URL, USERNAME, PASSWORD")), false);
+        assertConfigurationErrors(validationResultMessage, singletonList(new ValidationError("", "Unsupported key(s) found : invalid-keys. Allowed key(s) are : REPO_URL, USERNAME, PASSWORD")), false);
     }
 
 
     @Test
     public void shouldCheckIfPackageConfigurationValid() {
-        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(new PackageMaterialProperties()), asList(new ValidationError(Constants.PACKAGE_SPEC, "Package spec not specified")), false);
-        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(configurations(Constants.PACKAGE_SPEC, null)), asList(new ValidationError(Constants.PACKAGE_SPEC, "Package spec is null")), false);
-        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(configurations(Constants.PACKAGE_SPEC, "")), asList(new ValidationError(Constants.PACKAGE_SPEC, "Package spec is empty")), false);
-        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(configurations(Constants.PACKAGE_SPEC, "go-age?nt-*")), new ArrayList<ValidationError>(), true);
-        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(configurations(Constants.PACKAGE_SPEC, "go-agent")), new ArrayList<ValidationError>(), true);
+        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(new PackageMaterialProperties()), singletonList(new ValidationError(Constants.PACKAGE_SPEC, "Package spec not specified")), false);
+        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(configurations(Constants.PACKAGE_SPEC, null)), singletonList(new ValidationError(Constants.PACKAGE_SPEC, "Package spec is null")), false);
+        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(configurations(Constants.PACKAGE_SPEC, "")), singletonList(new ValidationError(Constants.PACKAGE_SPEC, "Package spec is empty")), false);
+        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(configurations(Constants.PACKAGE_SPEC, "go-age?nt-*")), emptyList(), true);
+        assertConfigurationErrors(configurationProvider.validatePackageConfiguration(configurations(Constants.PACKAGE_SPEC, "go-agent")), emptyList(), true);
     }
 
     @Test
@@ -110,13 +107,13 @@ public class PackageRepositoryConfigurationProviderTest {
         configurationProvidedByUser.addPackageMaterialProperty(Constants.PACKAGE_SPEC, new PackageMaterialProperty().withValue("go-agent"));
         configurationProvidedByUser.addPackageMaterialProperty("invalid-keys", new PackageMaterialProperty().withValue("some value"));
         ValidationResultMessage validationResultMessage = configurationProvider.validatePackageConfiguration(configurationProvidedByUser);
-        assertConfigurationErrors(validationResultMessage, asList(new ValidationError("", "Unsupported key(s) found : invalid-keys. Allowed key(s) are : PACKAGE_SPEC")), false);
+        assertConfigurationErrors(validationResultMessage, singletonList(new ValidationError("", "Unsupported key(s) found : invalid-keys. Allowed key(s) are : PACKAGE_SPEC")), false);
     }
 
     private void assertConfigurationErrors(ValidationResultMessage validationResult, List<ValidationError> expectedErrors, boolean expectedValidationResult) {
-        assertThat(validationResult.success(), is(expectedValidationResult));
-        assertThat(validationResult.getValidationErrors().size(), is(expectedErrors.size()));
-        assertThat(validationResult.getValidationErrors().containsAll(expectedErrors), is(true));
+        assertEquals(expectedValidationResult, validationResult.success());
+        assertEquals(expectedErrors.size(), validationResult.getValidationErrors().size());
+        assertTrue(validationResult.getValidationErrors().containsAll(expectedErrors));
     }
 
     private PackageMaterialProperties configurations(String key, String value) {

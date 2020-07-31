@@ -16,50 +16,46 @@
 
 package com.tw.go.plugin.material.artifactrepository.yum.exec.command;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
+import java.util.Collections;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProcessRunnerTest {
     @Test
     public void shouldRunACommand() {
-        ProcessOutput output = new ProcessRunner().execute(new String[]{"echo", "foo"}, new HashMap<String, String>());
-        assertThat(output.getStdOut().get(0), is("foo"));
-        assertThat(output.getReturnCode(), is(0));
+        ProcessOutput output = new ProcessRunner().execute(new String[]{"echo", "foo"}, Collections.emptyMap());
+        assertEquals("foo", output.getStdOut().get(0));
+        assertEquals(0, output.getReturnCode());
     }
 
     @Test
     public void shouldThrowExceptionIfCommandThrowsAnException() {
         try {
-            new ProcessRunner().execute(new String[]{"doesNotExist"}, new HashMap<String, String>());
+            new ProcessRunner().execute(new String[]{"doesNotExist"}, Collections.emptyMap());
             fail("Should have thrown exception");
         } catch (Exception e) {
-            assertThat(e instanceof RuntimeException, is(true));
+            assertTrue(e instanceof RuntimeException);
             if (isWindows()) {
-                assertThat(e.getMessage(), containsString("'doesNotExist' is not recognized as an internal or external command"));
+                assertTrue(e.getMessage().contains("'doesNotExist' is not recognized as an internal or external command"));
             } else {
-                assertThat(e.getMessage(), containsString("Cannot run program \"doesNotExist\""));
+                assertTrue(e.getMessage().contains("Cannot run program \"doesNotExist\""));
             }
         }
     }
 
     @Test
     public void shouldReturnErrorOutputIfCommandFails() {
-        ProcessOutput output = null;
+        ProcessOutput output;
         if (isWindows()) {
             output = new ProcessRunner().execute(new String[]{"dir", "foo:"}, null);
-            assertThat(output.getStdErrorAsString(), containsString("File Not Found"));
+            assertTrue(output.getStdErrorAsString().contains("File Not Found"));
         } else {
-            output = new ProcessRunner().execute(new String[]{"ls", "/foo"}, new HashMap<String, String>());
-            assertThat(output.getStdErrorAsString(), containsString("Error Message: ls: cannot access /foo: No such file or directory"));
+            output = new ProcessRunner().execute(new String[]{"ls", "/foo"}, Collections.emptyMap());
+            assertTrue(output.getStdErrorAsString().matches("Error Message: ls: cannot access [']?/foo[']?: No such file or directory"));
         }
-        assertThat(output.getReturnCode(), is(not(0)));
+        assertNotEquals(0, output.getReturnCode());
     }
 
     private boolean isWindows() {

@@ -20,13 +20,13 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public class ListUtil {
-    public static String join(Collection c) {
+    public static String join(Collection<?> c) {
         return join(c, ", ");
     }
 
-    public static String join(Collection c, String join) {
-        StringBuffer sb = new StringBuffer();
-        for (Iterator<Object> iterator = c.iterator(); iterator.hasNext(); ) {
+    public static String join(Collection<?> c, String join) {
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<?> iterator = c.iterator(); iterator.hasNext(); ) {
             sb.append(iterator.next());
             if (iterator.hasNext()) {
                 sb.append(join);

@@ -41,7 +41,6 @@ The following [rpm metadata](http://ftp.rpm.org/max-rpm/s1-rpm-inside-tags.html)
 1. BuildTime (required, automatically set by `rpmbuild`) - Used by the plugin to validate if the package is newer than what was last seen by GoCD. GoCD displays this field as Modified On.
 2. Packager - GoCD displays this field as Modified By. If not provided, it is shown as anonymous
 3. URL - Displayed as a Trackback URL by GoCD. Use this as a means to trace back to the job that published the package (within GoCD or outside) to the yum repository.
-4. BuildHost - Displayed by GoCD as Comment: Built on `$BUILDHOST`
 
 ## Published Environment Variables
 

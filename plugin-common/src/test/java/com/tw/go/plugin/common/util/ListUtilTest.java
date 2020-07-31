@@ -16,29 +16,28 @@
 
 package com.tw.go.plugin.common.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ListUtilTest {
     @Test
-    public void shouldJoinAListUsingComma(){
-        ArrayList<String> list = new ArrayList<String>();
+    public void shouldJoinAListUsingComma() {
+        ArrayList<String> list = new ArrayList<>();
         list.add("a");
         list.add("b");
         list.add("c");
-        assertThat(ListUtil.join(list), is("a, b, c"));
+        assertEquals("a, b, c", ListUtil.join(list));
     }
 
     @Test
-    public void shouldJoinAListUsingSpecifiedSeparator(){
-        ArrayList<String> list = new ArrayList<String>();
+    public void shouldJoinAListUsingSpecifiedSeparator() {
+        ArrayList<String> list = new ArrayList<>();
         list.add("a");
         list.add("b");
         list.add("c");
-        assertThat(ListUtil.join(list, " "), is("a b c"));
+        assertEquals("a b c", ListUtil.join(list, " "));
     }
 }

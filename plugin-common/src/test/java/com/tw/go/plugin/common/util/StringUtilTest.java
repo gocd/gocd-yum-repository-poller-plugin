@@ -16,25 +16,25 @@
 
 package com.tw.go.plugin.common.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StringUtilTest {
     @Test
     public void shouldCheckAStringForBlank() {
-        assertThat(StringUtil.isBlank(""), is(true));
-        assertThat(StringUtil.isBlank("   "), is(true));
-        assertThat(StringUtil.isBlank(null), is(true));
-        assertThat(StringUtil.isBlank(" a "), is(false));
+        assertTrue(StringUtil.isBlank(""));
+        assertTrue(StringUtil.isBlank("   "));
+        assertTrue(StringUtil.isBlank(null));
+        assertFalse(StringUtil.isBlank(" a "));
     }
 
     @Test
-    public void shouldCheckIfAStringIsNotBlank() throws Exception {
-        assertThat(StringUtil.isNotBlank(""), is(false));
-        assertThat(StringUtil.isNotBlank("   "), is(false));
-        assertThat(StringUtil.isNotBlank(null), is(false));
-        assertThat(StringUtil.isNotBlank(" a "), is(true));
+    public void shouldCheckIfAStringIsNotBlank() {
+        assertFalse(StringUtil.isNotBlank(""));
+        assertFalse(StringUtil.isNotBlank("   "));
+        assertFalse(StringUtil.isNotBlank(null));
+        assertTrue(StringUtil.isNotBlank(" a "));
     }
 }
