@@ -18,41 +18,40 @@ package com.tw.go.plugin.material.artifactrepository.yum.exec;
 
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.ValidationError;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.ValidationResultMessage;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CredentialsTest {
     @Test
     public void shouldGetUserInfo() throws Exception {
         Credentials credentials = new Credentials("user", "password");
-        assertThat(credentials.getUserInfo(), is("user:password"));
+        assertEquals("user:password", credentials.getUserInfo());
     }
 
     @Test
     public void shouldGetUserInfoWithEscapedPassword() throws Exception {
         Credentials credentials = new Credentials("user", "!password@:");
-        assertThat(credentials.getUserInfo(), is("user:%21password%40%3A"));
+        assertEquals("user:%21password%40%3A", credentials.getUserInfo());
     }
 
     @Test
     public void shouldEncodeURLCorrectlyWhenUsernameIsEmailAddress() throws Exception {
         Credentials credentials = new Credentials("user@example.com", "!password@:");
-        assertThat(credentials.getUserInfo(), is("user%40example.com:%21password%40%3A"));
+        assertEquals("user%40example.com:%21password%40%3A", credentials.getUserInfo());
     }
 
     @Test
-    public void shouldFailValidationIfOnlyPasswordProvided() throws Exception {
+    public void shouldFailValidationIfOnlyPasswordProvided() {
         ValidationResultMessage validationResult = new ValidationResultMessage();
         new Credentials(null, "password").validate(validationResult);
-        assertThat(validationResult.failure(), is(true));
+        assertTrue(validationResult.failure());
         assertTrue(validationResult.getValidationErrors().contains(new ValidationError(Constants.USERNAME, "Both Username and password are required.")));
 
         validationResult = new ValidationResultMessage();
         new Credentials("user", "").validate(validationResult);
-        assertThat(validationResult.failure(), is(true));
+        assertTrue(validationResult.failure());
         assertTrue(validationResult.getValidationErrors().contains(new ValidationError(Constants.PASSWORD, "Both Username and password are required.")));
     }
 }

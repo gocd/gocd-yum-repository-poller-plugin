@@ -20,28 +20,24 @@ import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HttpConnectionCheckerTest {
 
     private HttpConnectionChecker checker;
     private MockWebServer webServer;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         webServer = new MockWebServer();
         checker = new HttpConnectionChecker();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         webServer.shutdown();
     }
@@ -70,16 +66,16 @@ public class HttpConnectionCheckerTest {
 
         RecordedRequest recordedRequest = webServer.takeRequest();
         assertEquals("/repodata/repomd.xml", recordedRequest.getPath());
-        assertThat(recordedRequest.getHeaders().get("Authorization"), is((String) null));
+        assertNull(recordedRequest.getHeaders().get("Authorization"));
 
         recordedRequest = webServer.takeRequest();
         assertEquals("/repodata/repomd.xml", recordedRequest.getPath());
-        assertThat(recordedRequest.getHeaders().get("Authorization"), is("Basic Zm9vOmJhcg=="));
+        assertEquals("Basic Zm9vOmJhcg==", recordedRequest.getHeaders().get("Authorization"));
     }
 
 
     @Test
-    public void shouldFailCheckConnectionToTheRepoWhenHttpClientReturnsAUnSuccessfulReturnCode() throws IOException {
+    public void shouldFailCheckConnectionToTheRepoWhenHttpClientReturnsAUnSuccessfulReturnCode() {
         webServer.enqueue(new MockResponse().setResponseCode(500));
         HttpUrl url = webServer.url("/repodata/repomd.xml");
 
@@ -87,18 +83,18 @@ public class HttpConnectionCheckerTest {
             checker.checkConnection(url.toString(), new Credentials(null, null));
             fail("should fail");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("HTTP/1.1 500 Server Error"));
+            assertEquals("HTTP/1.1 500 Server Error", e.getMessage());
         }
         assertEquals(1, webServer.getRequestCount());
     }
 
     @Test
-    public void shouldFailCheckConnectionToTheRepoWhenHttpClientThrowsIOException() throws IOException {
+    public void shouldFailCheckConnectionToTheRepoWhenHttpClientThrowsIOException() {
         try {
             checker.checkConnection("https://localhost:11111", new Credentials(null, null));
             fail("should fail");
         } catch (Exception e) {
-            assertThat(e.getMessage(), containsString("Connection refused"));
+            assertTrue(e.getMessage().contains("Connection refused"));
         }
     }
 }

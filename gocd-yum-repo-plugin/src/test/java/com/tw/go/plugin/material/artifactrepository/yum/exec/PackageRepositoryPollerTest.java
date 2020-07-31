@@ -19,20 +19,15 @@ import com.tw.go.plugin.material.artifactrepository.yum.exec.message.CheckConnec
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.PackageMaterialProperties;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.PackageMaterialProperty;
 import com.tw.go.plugin.material.artifactrepository.yum.exec.message.PackageRevisionMessage;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Date;
 
-import static junit.framework.Assert.fail;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -42,9 +37,8 @@ public class PackageRepositoryPollerTest {
     private File sampleRepoDirectory;
     private String repoUrl;
     private PackageRepositoryPoller poller;
-    private PackageRepositoryConfigurationProvider configurationProvider;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         RepoqueryCacheCleaner.performCleanup();
         sampleRepoDirectory = new File("src/test/repos/samplerepo");
@@ -56,15 +50,16 @@ public class PackageRepositoryPollerTest {
         packageConfiguration = new PackageMaterialProperties();
         packageConfiguration.addPackageMaterialProperty(Constants.PACKAGE_SPEC, new PackageMaterialProperty().withValue("go-agent"));
 
-        configurationProvider = new PackageRepositoryConfigurationProvider();
+        PackageRepositoryConfigurationProvider configurationProvider = new PackageRepositoryConfigurationProvider();
         poller = new PackageRepositoryPoller(configurationProvider);
     }
 
     @Test
     public void shouldGetLatestModificationGivenPackageAndRepoConfigurations_getLatestRevision() {
-        PackageRevisionMessage latestRevision = poller.getLatestRevision(packageConfiguration, repositoryConfiguration);
-        assertThat(latestRevision, is(new PackageRevisionMessage("go-agent-13.1.1-16714.noarch", new Date(fromEpochTime(1365054258L)), null, null, null)));
-        assertThat(latestRevision.getDataFor("LOCATION"), is("file://" + sampleRepoDirectory.getAbsolutePath() + "/go-agent-13.1.1-16714.noarch.rpm"));
+        final PackageRevisionMessage latestRevision = poller.getLatestRevision(packageConfiguration, repositoryConfiguration);
+        final PackageRevisionMessage expected = new PackageRevisionMessage("go-agent-13.1.1-16714.noarch", new Date(fromEpochTime(1365054258L)), null, null, null);
+        assertPackageRevisionMessageEquivalent(expected, latestRevision);
+        assertPackageLocationData("/go-agent-13.1.1-16714.noarch.rpm", latestRevision);
     }
 
     @Test
@@ -74,7 +69,7 @@ public class PackageRepositoryPollerTest {
         try {
             poller.getLatestRevision(packageConfiguration, repositoryConfiguration);
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is("Invalid file path."));
+            assertEquals("Invalid file path.", e.getMessage());
         }
     }
 
@@ -82,9 +77,10 @@ public class PackageRepositoryPollerTest {
     public void shouldGetTheRightLocationForAnyPackage_getLatestRevision() {
         PackageMaterialProperties ppc = new PackageMaterialProperties();
         ppc.addPackageMaterialProperty(Constants.PACKAGE_SPEC, new PackageMaterialProperty().withValue("php"));
-        PackageRevisionMessage latestRevision = poller.getLatestRevision(ppc, repositoryConfiguration);
-        assertThat(latestRevision, is(new PackageRevisionMessage("php-0-0.noarch", new Date(fromEpochTime(1365053593)), null, null, null)));
-        assertThat(latestRevision.getDataFor("LOCATION"), is("file://" + sampleRepoDirectory.getAbsolutePath() + "/innerFolder/php-0-0.noarch.rpm"));
+        final PackageRevisionMessage latestRevision = poller.getLatestRevision(ppc, repositoryConfiguration);
+        final PackageRevisionMessage expected = new PackageRevisionMessage("php-0-0.noarch", new Date(fromEpochTime(1365053593)), null, null, null);
+        assertPackageRevisionMessageEquivalent(expected, latestRevision);
+        assertPackageLocationData("/innerFolder/php-0-0.noarch.rpm", latestRevision);
     }
 
     @Test
@@ -97,7 +93,7 @@ public class PackageRepositoryPollerTest {
             poller.getLatestRevision(packageConfiguration, repositoryConfiguration);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage().startsWith("Invalid file path."), is(true));
+            assertTrue(e.getMessage().startsWith("Invalid file path."));
         }
     }
 
@@ -127,7 +123,7 @@ public class PackageRepositoryPollerTest {
             fail("");
         } catch (RuntimeException e) {
             String expectedMessage = String.format("Error while querying repository with path '%s' and package spec '%s'.", repositoryConfiguration.getProperty(Constants.REPO_URL).value(), "junk-artifact");
-            assertThat(e.getMessage().startsWith(expectedMessage), is((true)));
+            assertTrue(e.getMessage().startsWith(expectedMessage));
         }
     }
 
@@ -139,7 +135,7 @@ public class PackageRepositoryPollerTest {
             poller.getLatestRevision(packageConfiguration, new PackageMaterialProperties());
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is(("Repository url not specified")));
+            assertEquals(("Repository url not specified"), e.getMessage());
         }
     }
 
@@ -152,7 +148,7 @@ public class PackageRepositoryPollerTest {
             poller.getLatestRevision(new PackageMaterialProperties(), repositoryConfiguration);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is(("Package spec not specified")));
+            assertEquals(("Package spec not specified"), e.getMessage());
         }
     }
 
@@ -162,22 +158,23 @@ public class PackageRepositoryPollerTest {
             poller.getLatestRevision(new PackageMaterialProperties(), new PackageMaterialProperties());
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage(), is(("Repository url not specified; Package spec not specified")));
+            assertEquals(("Repository url not specified; Package spec not specified"), e.getMessage());
         }
     }
 
     @Test
     public void shouldGetLatestModificationSinceGivenPackageAndRepoConfigurationsAndPreviouslyKnownRevision() {
         PackageRevisionMessage previousPackageRevision = new PackageRevisionMessage("symlinks-1.2-24.2.2.i386", new Date(fromEpochTime(1263710418L)), null, null, null);
-        PackageRevisionMessage latestRevision = poller.getLatestRevisionSince(packageConfiguration, repositoryConfiguration, previousPackageRevision);
-        assertThat(latestRevision, is(new PackageRevisionMessage("go-agent-13.1.1-16714.noarch", new Date(fromEpochTime(1365054258L)), null, null, null)));
+        final PackageRevisionMessage latestRevision = poller.getLatestRevisionSince(packageConfiguration, repositoryConfiguration, previousPackageRevision);
+        final PackageRevisionMessage expected = new PackageRevisionMessage("go-agent-13.1.1-16714.noarch", new Date(fromEpochTime(1365054258L)), null, null, null);
+        assertPackageRevisionMessageEquivalent(expected, latestRevision);
     }
 
     @Test
     public void shouldReturnNullGivenPackageAndRepoConfigurationsAndPreviouslyKnownRevision() {
         PackageRevisionMessage packageRevisionMessage = new PackageRevisionMessage("go-agent-13.1.1-16714-noarch", new Date(fromEpochTime(1365054258L)), null, null, null);
         PackageRevisionMessage latestRevision = poller.getLatestRevisionSince(packageConfiguration, repositoryConfiguration, packageRevisionMessage);
-        assertThat(latestRevision, is(nullValue()));
+        assertNull(latestRevision);
     }
 
     @Test
@@ -186,7 +183,7 @@ public class PackageRepositoryPollerTest {
         PackageRevisionMessage packageRevision = new PackageRevisionMessage("go-agent-13.1.1-16714-noarch", new Date(fromEpochTime(1365054258L)), null, null, null);
         when(spy.getLatestRevision(packageConfiguration, repositoryConfiguration)).thenReturn(packageRevision);
         PackageRevisionMessage latestRevision = poller.getLatestRevisionSince(packageConfiguration, repositoryConfiguration, new PackageRevisionMessage("go-agent-13.1.1-16714-noarch", new Date(fromEpochTime(1365054258L)), null, null, null));
-        assertThat(latestRevision, is(nullValue()));
+        assertNull(latestRevision);
     }
 
     @Test
@@ -197,45 +194,45 @@ public class PackageRepositoryPollerTest {
             poller.getLatestRevision(packageConfiguration, repositoryConfiguration);
             fail("Should have failed");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("File protocol does not support username and/or password."));
+            assertEquals("File protocol does not support username and/or password.", e.getMessage());
         }
     }
 
     @Test
-    public void shouldCheckRepoConnection() throws Exception {
+    public void shouldCheckRepoConnection() {
         CheckConnectionResultMessage checkConnectionResultMessage = poller.checkConnectionToRepository(repositoryConfiguration);
-        assertThat(checkConnectionResultMessage.success(), is(true));
-        assertThat(checkConnectionResultMessage.getMessages().size(), is(1));
-        assertThat(checkConnectionResultMessage.getMessages().get(0), is(String.format("Successfully accessed repository metadata at %s", repoUrl + "/repodata/repomd.xml")));
+        assertTrue(checkConnectionResultMessage.success());
+        assertEquals(1, checkConnectionResultMessage.getMessages().size());
+        assertEquals(String.format("Successfully accessed repository metadata at %s", repoUrl + "/repodata/repomd.xml"), checkConnectionResultMessage.getMessages().get(0));
     }
 
     @Test
-    public void shouldReturnErrorsWhenConnectionToRepoFails() throws Exception {
+    public void shouldReturnErrorsWhenConnectionToRepoFails() {
         repositoryConfiguration = new PackageMaterialProperties();
         repositoryConfiguration.addPackageMaterialProperty(Constants.REPO_URL, new PackageMaterialProperty().withValue("file://invalid_path"));
 
         CheckConnectionResultMessage result = poller.checkConnectionToRepository(repositoryConfiguration);
-        assertThat(result.success(), is(false));
-        assertThat(result.getMessages().get(0), is("Could not access file - file://invalid_path/repodata/repomd.xml. Invalid file path."));
+        assertFalse(result.success());
+        assertEquals("Could not access file - file://invalid_path/repodata/repomd.xml. Invalid file path.", result.getMessages().get(0));
     }
 
     @Test
-    public void shouldPerformRepoValidationsBeforeCheckConnection() throws Exception {
+    public void shouldPerformRepoValidationsBeforeCheckConnection() {
         repositoryConfiguration = new PackageMaterialProperties();
         repositoryConfiguration.addPackageMaterialProperty(Constants.REPO_URL, new PackageMaterialProperty().withValue("ftp://username:password@invalid_path"));
 
         CheckConnectionResultMessage result = poller.checkConnectionToRepository(repositoryConfiguration);
-        assertThat(result.success(), is(false));
-        assertThat(result.getMessages().size(), is(2));
-        assertThat(result.getMessages().get(0), is("Invalid URL: Only 'file', 'http' and 'https' protocols are supported."));
-        assertThat(result.getMessages().get(1), is("User info should not be provided as part of the URL. Please provide credentials using USERNAME and PASSWORD configuration keys."));
+        assertFalse(result.success());
+        assertEquals(2, result.getMessages().size());
+        assertEquals("Invalid URL: Only 'file', 'http' and 'https' protocols are supported.", result.getMessages().get(0));
+        assertEquals("User info should not be provided as part of the URL. Please provide credentials using USERNAME and PASSWORD configuration keys.", result.getMessages().get(1));
     }
 
     @Test
     public void shouldCheckConnectionToPackageAndRespondWithLatestPackageFound() {
         CheckConnectionResultMessage result = poller.checkConnectionToPackage(packageConfiguration, repositoryConfiguration);
-        assertThat(result.success(), is(true));
-        assertThat(result.getMessages().get(0), is("Found package 'go-agent-13.1.1-16714.noarch'."));
+        assertTrue(result.success());
+        assertEquals("Found package 'go-agent-13.1.1-16714.noarch'.", result.getMessages().get(0));
     }
 
     @Test
@@ -243,8 +240,8 @@ public class PackageRepositoryPollerTest {
         packageConfiguration = new PackageMaterialProperties();
         packageConfiguration.addPackageMaterialProperty(Constants.PACKAGE_SPEC, new PackageMaterialProperty().withValue("go-a"));
         CheckConnectionResultMessage result = poller.checkConnectionToPackage(packageConfiguration, repositoryConfiguration);
-        assertThat(result.success(), is(false));
-        assertThat(result.getMessages().get(0), is("Could not find any package that matched 'go-a'."));
+        assertFalse(result.success());
+        assertEquals("Could not find any package that matched 'go-a'.", result.getMessages().get(0));
     }
 
     @Test
@@ -252,10 +249,10 @@ public class PackageRepositoryPollerTest {
         packageConfiguration = new PackageMaterialProperties();
         packageConfiguration.addPackageMaterialProperty(Constants.PACKAGE_SPEC, new PackageMaterialProperty().withValue("go*"));
         CheckConnectionResultMessage result = poller.checkConnectionToPackage(packageConfiguration, repositoryConfiguration);
-        assertThat(result.success(), is(false));
-        assertThat(result.getMessages().get(0).startsWith("Given Package Spec (go*) resolves to more than one file on the repository: "), is(true));
-        assertThat(result.getMessages().get(0).contains("go-agent-13.1.1-16714.noarch.rpm"), is(true));
-        assertThat(result.getMessages().get(0).contains("go-server-13.1.1-16714.noarch.rpm"), is(true));
+        assertFalse(result.success());
+        assertTrue(result.getMessages().get(0).startsWith("Given Package Spec (go*) resolves to more than one file on the repository: "));
+        assertTrue(result.getMessages().get(0).contains("go-agent-13.1.1-16714.noarch.rpm"));
+        assertTrue(result.getMessages().get(0).contains("go-server-13.1.1-16714.noarch.rpm"));
     }
 
     @Test
@@ -263,22 +260,49 @@ public class PackageRepositoryPollerTest {
         repositoryConfiguration = new PackageMaterialProperties();
         repositoryConfiguration.addPackageMaterialProperty(Constants.REPO_URL, new PackageMaterialProperty().withValue("file://invalid_random_2q342340"));
         CheckConnectionResultMessage result = poller.checkConnectionToPackage(packageConfiguration, repositoryConfiguration);
-        assertThat(result.success(), is(false));
-        assertThat(result.getMessages().get(0), is("Could not access file - file://invalid_random_2q342340/repodata/repomd.xml. Invalid file path."));
+        assertFalse(result.success());
+        assertEquals("Could not access file - file://invalid_random_2q342340/repodata/repomd.xml. Invalid file path.", result.getMessages().get(0));
     }
 
     @Test
     public void shouldValidatePackageDataWhileTestingConnection() {
         CheckConnectionResultMessage result = poller.checkConnectionToPackage(new PackageMaterialProperties(), repositoryConfiguration);
-        assertThat(result.success(), is(false));
-        assertThat(result.getMessages().get(0), is("Package spec not specified"));
+        assertFalse(result.success());
+        assertEquals("Package spec not specified", result.getMessages().get(0));
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         RepoqueryCacheCleaner.performCleanup();
     }
 
+    private void assertPackageLocationData(String expectedLocation, PackageRevisionMessage pkg) {
+        // RHEL 7 gives the full path while RHEL 8 gives the relative path. This assertion
+        // should cover both cases.
+        assertTrue(("file://" + sampleRepoDirectory.getAbsolutePath() + expectedLocation).endsWith(pkg.getDataFor("LOCATION")));
+    }
+
+    private void assertPackageRevisionMessageEquivalent(PackageRevisionMessage expected, PackageRevisionMessage actual) {
+        if (!"(none)".equals(actual.getUser())) {
+            assertEquals(expected.getUser(), actual.getUser());
+        }
+
+        assertEquals(expected.getRevision(), actual.getRevision());
+        assertTrue(isWithinAMinute(expected.getTimestamp(), actual.getTimestamp()));
+    }
+
+    /**
+     * Unlike RHEL 7, RHEL 8 (i.e., dnf repoquery) BUILDTIME field outputs the time to only minute precision as opposed
+     * to second precision. Thus, in order to support both yum repoquery and dnf repoquery, ignore the seconds when
+     * comparing timestamps.
+     *
+     * @param left  a {@link Date}
+     * @param right a {@link Date}
+     * @return true if the difference is a minute or less, false otherwise
+     */
+    private boolean isWithinAMinute(Date left, Date right) {
+        return Math.abs(left.getTime() - right.getTime()) <= 60000L;
+    }
 
     private long fromEpochTime(long timeInSeconds) {
         return timeInSeconds * 1000;

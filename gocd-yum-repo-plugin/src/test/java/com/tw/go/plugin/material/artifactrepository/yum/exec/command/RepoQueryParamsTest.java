@@ -17,16 +17,13 @@
 package com.tw.go.plugin.material.artifactrepository.yum.exec.command;
 
 import com.tw.go.plugin.material.artifactrepository.yum.exec.RepoUrl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RepoQueryParamsTest {
     @Test
-    public void shouldReturnUrlWithEscapedPassword() throws Exception {
+    public void shouldReturnUrlWithEscapedPassword() {
         String repoid = "repoid";
         String repourl = "http://repohost:1111/some/path#fragment?q=foo";
         String spec = "pkg-spec";
@@ -34,26 +31,26 @@ public class RepoQueryParamsTest {
         String password = "!4321abcd";
         RepoQueryParams params = new RepoQueryParams(repoid, new RepoUrl(repourl, username, password), spec);
 
-        assertThat(params.getRepoFromId(), is("repoid,http://username:%214321abcd@repohost:1111/some/path#fragment?q=foo"));
+        assertEquals("repoid,http://username:%214321abcd@repohost:1111/some/path#fragment?q=foo", params.getRepoFromId());
     }
 
     @Test
-    public void shouldThrowExceptionIfRepoUrlIsInvalid() throws Exception {
+    public void shouldThrowExceptionIfRepoUrlIsInvalid() {
         try {
             new RepoQueryParams("repoid", new RepoUrl("://some/path", "username", "!4321abcd"), "pkg-spec").getRepoFromId();
             fail("should throw exception");
         } catch (Exception e) {
-            assertThat(e.getMessage(), containsString("java.net.MalformedURLException"));
+            assertTrue(e.getMessage().contains("java.net.MalformedURLException"));
         }
     }
 
     @Test
-    public void shouldReturnUrlAsIsIfNoCredentialsProvided() throws Exception {
+    public void shouldReturnUrlAsIsIfNoCredentialsProvided() {
         String repoid = "repoid";
         String repourl = "http://repohost:1111/some/path#fragment?q=foo";
         String spec = "pkg-spec";
         RepoQueryParams params = new RepoQueryParams(repoid, new RepoUrl(repourl, null, null), spec);
-        assertThat(params.getRepoFromId(), is("repoid,http://repohost:1111/some/path#fragment?q=foo"));
+        assertEquals("repoid,http://repohost:1111/some/path#fragment?q=foo", params.getRepoFromId());
     }
 
     @Test
@@ -63,7 +60,7 @@ public class RepoQueryParamsTest {
             params.getRepoFromId();
             fail("expected invalid uri exception");
         } catch (Exception e) {
-            assertThat(e.getMessage(), is("Invalid uri format file:/path"));
+            assertEquals("Invalid uri format file:/path", e.getMessage());
         }
     }
 
