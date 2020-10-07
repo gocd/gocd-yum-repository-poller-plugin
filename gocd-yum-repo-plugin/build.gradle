@@ -19,7 +19,7 @@ dependencies {
   compileOnly group: 'cd.go.plugin', name: 'go-plugin-api', version: '20.6.0'
 
   compile group: 'commons-io', name: 'commons-io', version: '2.7'
-  compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
+  compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
   testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.8.0'
 
