@@ -18,8 +18,8 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
   id = 'yum'
-  pluginVersion = '2.0.5'
-  goCdVersion = '15.2.0'
+  pluginVersion = '2.1.0'
+  goCdVersion = '20.9.0'
   name = 'Yum Plugin'
   description = 'Plugin that polls a yum repository'
   vendorName = 'ThoughtWorks Go Team'
