@@ -15,17 +15,17 @@
  */
 
 dependencies {
-  compile project(':plugin-common')
+  implementation project(':plugin-common')
   compileOnly group: 'cd.go.plugin', name: 'go-plugin-api', version: '21.2.0'
 
-  compile group: 'commons-io', name: 'commons-io', version: '2.7'
-  compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+  implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-  testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.8.0'
+  testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.9.2'
 
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.4.6'
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
-  testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.0.0'
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.1'
+  testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.1'
 }
 
 sourceSets {
@@ -42,7 +42,7 @@ test {
 }
 
 jar {
-  from(configurations.compile) {
+  from(configurations.runtimeClasspath) {
     into "lib/"
   }
 }
