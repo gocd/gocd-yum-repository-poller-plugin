@@ -42,7 +42,7 @@ test {
 }
 
 jar {
-  from(configurations.compile) {
+  from(configurations.runtimeClasspath) {
     into "lib/"
   }
 }
