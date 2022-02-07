@@ -12,7 +12,7 @@ A given instance of polling is considered successful if `repoquery` returns a si
 
 This plugin comes bundled along with the GoCD server, hence a separate installation is not required.
 
-> **Note:** This plugin is available for Go servers running on Linux nodes having `repoquery` installed using the  [`yum-utils`](http://linux.die.net/man/1/yum-utils) package, [Ubuntu](http://manpages.ubuntu.com/manpages/latest/man1/yum-utils.1.html), [CentOS](http://rpmfind.net/linux/rpm2html/search.php?query=yum-utils&system=centos))
+> **Note:** This plugin is available for GoCD servers running on Linux nodes having `repoquery` installed using the  [`yum-utils`](http://linux.die.net/man/1/yum-utils) package, [Ubuntu](http://manpages.ubuntu.com/manpages/latest/man1/yum-utils.1.html), [CentOS](http://rpmfind.net/linux/rpm2html/search.php?query=yum-utils&system=centos))
 
 ## Repository definition
 
