@@ -1,0 +1,21 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Testing For PRs
+
+on: [ pull_request ]
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Install yum/dnf/repoquery
+        run: sudo apt install yum-utils
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 15
+          distribution: adopt
+      - name: Build with Gradle
+        run: ./gradlew assemble check
