@@ -9,8 +9,10 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
+      - name: Install yum/dnf/repoquery
+        run: sudo apt install yum-utils
       - uses: actions/checkout@v2
       - name: Set up JDK
         uses: actions/setup-java@v2
