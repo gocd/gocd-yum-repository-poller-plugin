@@ -16,14 +16,14 @@
 
 dependencies {
   implementation project(':plugin-common')
-  compileOnly group: 'cd.go.plugin', name: 'go-plugin-api', version: '21.4.0'
+  compileOnly group: 'cd.go.plugin', name: 'go-plugin-api', version: '22.1.0'
 
   implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
   testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.9.3'
 
-  testImplementation group: 'cd.go.plugin', name: 'go-plugin-api', version: '21.3.0'
+  testImplementation group: 'cd.go.plugin', name: 'go-plugin-api', version: '22.1.0'
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.4.0'
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2'
   testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
