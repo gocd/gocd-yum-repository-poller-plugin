@@ -15,7 +15,7 @@ jobs:
         run: sudo apt install yum-utils
       - uses: actions/checkout@v3
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: 15
           distribution: adopt
@@ -32,7 +32,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: 15
           distribution: adopt
