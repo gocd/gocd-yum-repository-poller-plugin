@@ -22,7 +22,7 @@ gocdPlugin {
   goCdVersion = '15.2.0'
   name = 'Yum Plugin'
   description = 'Plugin that polls a yum repository'
-  vendorName = 'Thoughtworks, Inc'
+  vendorName = 'Thoughtworks, Inc.'
   vendorUrl = 'https://github.com/gocd/gocd-yum-repository-poller-plugin'
   targetOs = ['Linux']
 
