@@ -18,7 +18,7 @@ plugins {
 }
 
 dependencies {
-  compileOnly group: 'cd.go.plugin', name: 'go-plugin-api', version: '22.1.0'
+  compileOnly group: 'cd.go.plugin', name: 'go-plugin-api', version: '22.2.0'
 
   api group: 'commons-io', name: 'commons-io', version: '2.11.0'
   api group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
