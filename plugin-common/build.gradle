@@ -22,6 +22,12 @@ dependencies {
 
   api project.deps.commonsIo
   api project.deps.httpClient
+  constraints {
+    api(project.deps.commonsCodec) {
+      because 'Transitive dependency of apache httpclient has reported vulnerabilities'
+    }
+  }
+
   api group: 'com.google.code.gson', name: 'gson', version: '2.10'
   testImplementation project.deps.mockWebServer
   testImplementation project.deps.mockito
