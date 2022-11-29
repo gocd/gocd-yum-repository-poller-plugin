@@ -56,6 +56,7 @@ public class RepoQueryCommand {
     public PackageRevisionMessage execute() {
         YumEnvironmentMap yumEnvironmentMap = new YumEnvironmentMap(params.getRepoId());
         String[] command = {"repoquery",
+                "--latest-limit=1",
                 "--repofrompath=" + params.getRepoFromId(),
                 "--repoid=" + params.getRepoId(),
                 "-q",
