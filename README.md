@@ -10,7 +10,7 @@ A given instance of polling is considered successful if `repoquery` returns a si
 
 ## Installation
 
-From GoGCD `23.1.0` onwards, you should download the latest release jar and install into your server's `plugins/external` directory
+From GoGCD `23.1.0` onwards, you should download the [latest release](https://github.com/gocd/gocd-yum-repository-poller-plugin/releases/latest) jar and install into your server's `plugins/external` directory
 per the [plugin user guide](https://docs.gocd.org/current/extension_points/plugin_user_guide.html).
 
 Prior to GoCD `23.1.0`, this plugin came bundled along with the GoCD server, and a separate installation is not required.
