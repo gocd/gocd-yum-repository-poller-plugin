@@ -3,10 +3,10 @@
 The Yum respository poller is a [package material](https://docs.gocd.org/current/extension_points/package_repository_extension.html) plugin capable of polling yum repositories for rpm packages. GoCD server interacts with this plugin via package material plugin interfaces. The plugin makes use of a command similar to the following to poll the server. So it does not depend on the files that yum depends on e.g. files under `/etc/yum.repos.d`
 
 ```
-repoquery --repofrompath=uuid,$REPO_URL --repoid=uuid -q $PACKAGE_SPEC -qf "%{LOCATION}..."
+dnf repoquery --repofrompath=uuid,$REPO_URL --repoid=uuid -q $PACKAGE_SPEC -qf "%{LOCATION}..."
 ```
 
-A given instance of polling is considered successful if `repoquery` returns a single package as output.
+A given instance of polling is considered successful if `dnf repoquery` returns a single package as output.
 
 ## Installation
 
@@ -15,7 +15,7 @@ per the [plugin user guide](https://docs.gocd.org/current/extension_points/plugi
 
 Prior to GoCD `23.1.0`, this plugin came bundled along with the GoCD server, and a separate installation is not required.
 
-> **Note:** This plugin is available for GoCD servers running on Linux nodes having `repoquery` installed using the  [`yum-utils`](http://linux.die.net/man/1/yum-utils) package, [Ubuntu](http://manpages.ubuntu.com/manpages/latest/man1/yum-utils.1.html), [CentOS](http://rpmfind.net/linux/rpm2html/search.php?query=yum-utils&system=centos))
+> **Note:** This plugin is available for GoCD servers running on Linux nodes having `dnf` installed.
 
 ## Repository definition
 
@@ -23,7 +23,7 @@ Repo URL must be a valid http, https or file URL. This plugin looks for the pres
 
 ## Package definition
 
-In case of this plugin, the package definition is completely determined by the package spec. The package spec may be in any of the following formats. Please refer to the [repoquery man page](https://linux.die.net/man/1/repoquery) for details.
+In case of this plugin, the package definition is completely determined by the package spec. The package spec may be in any of the following formats. Please refer to the [dnf repoquery docs](https://dnf.readthedocs.io/en/latest/command_ref.html#repoquery-command-label) for details.
 
 ```
 name
