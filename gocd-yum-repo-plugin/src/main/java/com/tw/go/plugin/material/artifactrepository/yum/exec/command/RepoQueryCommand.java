@@ -55,7 +55,7 @@ public class RepoQueryCommand {
 
     public PackageRevisionMessage execute() {
         YumEnvironmentMap yumEnvironmentMap = new YumEnvironmentMap(params.getRepoId());
-        String[] command = {"dnf", "repoquery",
+        String[] command = {"repoquery",
                 "--repofrompath=" + params.getRepoFromId(),
                 "--repoid=" + params.getRepoId(),
                 "-q",

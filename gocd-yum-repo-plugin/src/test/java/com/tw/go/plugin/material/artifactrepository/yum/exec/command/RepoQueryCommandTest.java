@@ -192,7 +192,7 @@ public class RepoQueryCommandTest {
     }
 
     private String[] repoQueryCommand(String repoid, String spec, String repoFromPath) {
-        return new String[]{"dnf", "repoquery",
+        return new String[]{"repoquery",
                 "--repofrompath=" + repoFromPath,
                 "--repoid=" + repoid,
                 "-q",
