@@ -9,18 +9,21 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Install yum/dnf/repoquery
-        run: sudo apt install yum-utils
       - uses: actions/checkout@v3
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - uses: addnab/docker-run-action@v3
         with:
-          java-version: 17
-          distribution: temurin
-      - name: Test with Gradle
-        run: ./gradlew assemble check
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: docker.io
+          image: eclipse-temurin:17-ubi9-minimal
+          options: >-
+            -v ${{ github.workspace }}:/work
+          run: |
+            microdnf install -y git findutils yum-utils
+            cd work
+            ./gradlew assemble check
   previewGithubRelease:
     needs: test
     runs-on: ubuntu-latest
@@ -31,10 +34,18 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - uses: addnab/docker-run-action@v3
         with:
-          java-version: 17
-          distribution: temurin
-      - name: Test with Gradle
-        run: ./gradlew githubRelease
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: docker.io
+          image: eclipse-temurin:17-ubi9-minimal
+          options: >-
+            -v ${{ github.workspace }}:/work
+            -e GITHUB_USER=gocd
+            -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          run: |
+            microdnf install -y git findutils
+            cd work
+            ./gradlew githubRelease
+
