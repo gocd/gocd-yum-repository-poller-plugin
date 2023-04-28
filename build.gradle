@@ -17,57 +17,51 @@
 apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-helpers/master/helper.gradle?_=${(int) (new Date().toInstant().epochSecond / 60)}"
 
 gocdPlugin {
-    id = 'yum'
-    pluginVersion = '2.0.6'
-    goCdVersion = '15.2.0'
-    name = 'Yum Plugin'
-    description = 'Plugin that polls a yum repository'
-    vendorName = 'Thoughtworks, Inc.'
-    vendorUrl = 'https://github.com/gocd/gocd-yum-repository-poller-plugin'
-    targetOs = ['Linux']
+  id = 'yum'
+  pluginVersion = '2.0.6'
+  goCdVersion = '15.2.0'
+  name = 'Yum Plugin'
+  description = 'Plugin that polls a yum repository'
+  vendorName = 'Thoughtworks, Inc.'
+  vendorUrl = 'https://github.com/gocd/gocd-yum-repository-poller-plugin'
+  targetOs = ['Linux']
 
-    githubRepo {
-        owner = System.getenv('GITHUB_USER') ?: 'bob'
-        repo = 'gocd-yum-repository-poller-plugin'
-        token = System.getenv('GITHUB_TOKEN') ?: 'bad-token'
-    }
+  githubRepo {
+    owner = System.getenv('GITHUB_USER') ?: 'bob'
+    repo = 'gocd-yum-repository-poller-plugin'
+    token = System.getenv('GITHUB_TOKEN') ?: 'bad-token'
+  }
 
-    pluginProject = project(':gocd-yum-repo-plugin')
+  pluginProject = project(':gocd-yum-repo-plugin')
 
-    prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
-    assetsToRelease = [project(':gocd-yum-repo-plugin').tasks.findByName('jar')]
-
-    licenseReport {
-        excludes = [
-                'com.squareup.okio:okio' // Seems to not be able to resolve license, not sure if POM issue or jk1-license-report issue. Maybe due to no jar?
-        ]
-    }
+  prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
+  assetsToRelease = [project(':gocd-yum-repo-plugin').tasks.findByName('jar')]
 }
 
 allprojects {
-    group = 'cd.go'
-    version = gocdPlugin.fullVersion(project)
+  group = 'cd.go'
+  version = gocdPlugin.fullVersion(project)
 }
 
 ext {
-    deps = [
-            gocdPluginApi: 'cd.go.plugin:go-plugin-api:23.1.0',
-            commonsIo    : 'commons-io:commons-io:2.11.0',
-            commonsCodec : 'commons-codec:commons-codec:1.15',
-            httpClient   : 'org.apache.httpcomponents:httpclient:4.5.14',
-            mockito      : 'org.mockito:mockito-core:5.3.0',
-            mockWebServer: 'com.squareup.okhttp3:mockwebserver:4.11.0',
-    ]
+  deps = [
+    gocdPluginApi: 'cd.go.plugin:go-plugin-api:23.1.0',
+    commonsIo:     'commons-io:commons-io:2.11.0',
+    commonsCodec:  'commons-codec:commons-codec:1.15',
+    httpClient:    'org.apache.httpcomponents:httpclient:4.5.14',
+    mockito:       'org.mockito:mockito-core:5.3.0',
+    mockWebServer: 'com.squareup.okhttp3:mockwebserver:4.11.0',
+  ]
 
-    versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
+  versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
 }
 
 subprojects {
-    repositories {
-        mavenCentral()
-        mavenLocal()
-    }
-    dependencies {
-        testImplementation platform('org.junit:junit-bom:5.9.2')
-    }
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+  dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.2')
+  }
 }
