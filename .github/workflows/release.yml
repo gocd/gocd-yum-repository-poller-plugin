@@ -33,6 +33,7 @@ jobs:
             -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             -e PRERELEASE=${{ github.event.inputs.prerelease }}
           run: |
+            git config --global --add safe.directory /work
             microdnf install -y git findutils
             cd work
             ./gradlew verifyExpRelease githubRelease
