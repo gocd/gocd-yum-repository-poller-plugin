@@ -45,6 +45,7 @@ jobs:
             -e GITHUB_USER=gocd
             -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           run: |
+            git config --global --add safe.directory /work
             microdnf install -y git findutils
             cd work
             ./gradlew githubRelease
