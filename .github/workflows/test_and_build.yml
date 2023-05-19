@@ -21,6 +21,7 @@ jobs:
           options: >-
             -v ${{ github.workspace }}:/work
           run: |
+            git config --global --add safe.directory /work
             microdnf install -y git findutils yum-utils
             cd work
             ./gradlew assemble check
