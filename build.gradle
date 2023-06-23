@@ -49,7 +49,7 @@ ext {
     commonsIo:     'commons-io:commons-io:2.13.0',
     commonsCodec:  'commons-codec:commons-codec:1.15',
     httpClient:    'org.apache.httpcomponents:httpclient:4.5.14',
-    mockito:       'org.mockito:mockito-core:5.3.1',
+    mockito:       'org.mockito:mockito-core:5.4.0',
     mockWebServer: 'com.squareup.okhttp3:mockwebserver:4.11.0',
   ]
 
