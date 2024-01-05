@@ -45,7 +45,7 @@ allprojects {
 
 ext {
   deps = [
-    gocdPluginApi: 'cd.go.plugin:go-plugin-api:23.4.0',
+    gocdPluginApi: 'cd.go.plugin:go-plugin-api:23.5.0',
     commonsIo:     'commons-io:commons-io:2.15.1',
     commonsCodec:  'commons-codec:commons-codec:1.16.0',
     httpClient:    'org.apache.httpcomponents:httpclient:4.5.14',
