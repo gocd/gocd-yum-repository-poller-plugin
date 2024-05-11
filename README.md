@@ -1,6 +1,6 @@
 # Yum repository poller plugin for GoCD
 
-The Yum respository poller is a [package material](https://docs.gocd.org/current/extension_points/package_repository_extension.html) plugin capable of polling yum repositories for rpm packages. GoCD server interacts with this plugin via package material plugin interfaces. The plugin makes use of a command similar to the following to poll the server. So it does not depend on the files that yum depends on e.g. files under `/etc/yum.repos.d`
+The Yum repository poller is a [package material](https://docs.gocd.org/current/extension_points/package_repository_extension.html) plugin capable of polling yum repositories for rpm packages. GoCD server interacts with this plugin via package material plugin interfaces. The plugin makes use of a command similar to the following to poll the server. So it does not depend on the files that yum depends on e.g. files under `/etc/yum.repos.d`
 
 ```
 dnf repoquery --repofrompath=uuid,$REPO_URL --repoid=uuid -q $PACKAGE_SPEC -qf "%{LOCATION}..."
