@@ -28,7 +28,7 @@ dependencies {
     }
   }
 
-  api group: 'com.google.code.gson', name: 'gson', version: '2.12.1'
+  api group: 'com.google.code.gson', name: 'gson', version: '2.13.1'
   testImplementation project.deps.mockWebServer
   testImplementation project.deps.mockito
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
