@@ -10,8 +10,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     container:
         image: eclipse-temurin:17-ubi9-minimal
         options: >-
