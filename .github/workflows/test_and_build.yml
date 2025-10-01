@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-        image: eclipse-temurin:21-ubi10-minimal
+        image: eclipse-temurin:21-ubi9-minimal
         options: >-
           --name jdk-container
           -v ${{ github.workspace }}:/work
