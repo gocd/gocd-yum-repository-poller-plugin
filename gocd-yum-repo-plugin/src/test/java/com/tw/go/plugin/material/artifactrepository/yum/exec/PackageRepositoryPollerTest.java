@@ -27,6 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -93,7 +97,7 @@ public class PackageRepositoryPollerTest {
             poller.getLatestRevision(packageConfiguration, repositoryConfiguration);
             fail("should have thrown exception");
         } catch (RuntimeException e) {
-            assertTrue(e.getMessage().startsWith("Invalid file path."));
+            assertThat(e.getMessage(), startsWith("Invalid file path."));
         }
     }
 
@@ -107,7 +111,7 @@ public class PackageRepositoryPollerTest {
             fail("");
         } catch (RuntimeException e) {
             String expectedMessage = String.format("Error while querying repository with path '%s' and package spec '%s'.", repositoryConfiguration.getProperty(Constants.REPO_URL).value(), "junk-artifact");
-            assertTrue(e.getMessage().startsWith(expectedMessage));
+            assertThat(e.getMessage(), startsWith(expectedMessage));
         }
     }
 
@@ -123,7 +127,7 @@ public class PackageRepositoryPollerTest {
             fail("");
         } catch (RuntimeException e) {
             String expectedMessage = String.format("Error while querying repository with path '%s' and package spec '%s'.", repositoryConfiguration.getProperty(Constants.REPO_URL).value(), "junk-artifact");
-            assertTrue(e.getMessage().startsWith(expectedMessage));
+            assertThat(e.getMessage(), startsWith(expectedMessage));
         }
     }
 
@@ -250,9 +254,9 @@ public class PackageRepositoryPollerTest {
         packageConfiguration.addPackageMaterialProperty(Constants.PACKAGE_SPEC, new PackageMaterialProperty().withValue("go*"));
         CheckConnectionResultMessage result = poller.checkConnectionToPackage(packageConfiguration, repositoryConfiguration);
         assertFalse(result.success());
-        assertTrue(result.getMessages().get(0).startsWith("Given Package Spec (go*) resolves to more than one file on the repository: "));
-        assertTrue(result.getMessages().get(0).contains("go-agent-13.1.1-16714.noarch.rpm"));
-        assertTrue(result.getMessages().get(0).contains("go-server-13.1.1-16714.noarch.rpm"));
+        assertThat(result.getMessages().get(0), startsWith("Given Package Spec (go*) resolves to more than one file on the repository: "));
+        assertThat(result.getMessages().get(0), containsString("go-agent-13.1.1-16714.noarch.rpm"));
+        assertThat(result.getMessages().get(0), containsString("go-server-13.1.1-16714.noarch.rpm"));
     }
 
     @Test
@@ -279,7 +283,7 @@ public class PackageRepositoryPollerTest {
     private void assertPackageLocationData(String expectedLocation, PackageRevisionMessage pkg) {
         // RHEL 7 gives the full path while RHEL 8 gives the relative path. This assertion
         // should cover both cases.
-        assertTrue(("file://" + sampleRepoDirectory.getAbsolutePath() + expectedLocation).endsWith(pkg.getDataFor("LOCATION")));
+        assertThat("file://" + sampleRepoDirectory.getAbsolutePath() + expectedLocation, endsWith(pkg.getDataFor("LOCATION")));
     }
 
     private void assertPackageRevisionMessageEquivalent(PackageRevisionMessage expected, PackageRevisionMessage actual) {
