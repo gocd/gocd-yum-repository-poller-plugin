@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-        image: eclipse-temurin:17-ubi9-minimal
+        image: eclipse-temurin:21-ubi10-minimal
         options: >-
           --name jdk-container
           -v ${{ github.workspace }}:/work
@@ -47,7 +47,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
-          java-version: 17
+          java-version: 21
           distribution: temurin
       - name: Release
         run: ./gradlew githubRelease
