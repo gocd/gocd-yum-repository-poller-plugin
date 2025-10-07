@@ -35,6 +35,7 @@ gocdPlugin {
   pluginProject = project(':gocd-yum-repo-plugin')
 
   prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
+  prereleaseDryrun = !"Yes".equalsIgnoreCase(System.getenv('PRERELEASE'))
   assetsToRelease = [project(':gocd-yum-repo-plugin').tasks.findByName('jar')]
 }
 
