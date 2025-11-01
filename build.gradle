@@ -51,7 +51,7 @@ ext {
     commonsCodec:  'commons-codec:commons-codec:1.19.0',
     httpClient:    'org.apache.httpcomponents:httpclient:4.5.14',
     mockito:       'org.mockito:mockito-core:5.20.0',
-    mockWebServer: 'com.squareup.okhttp3:mockwebserver:5.1.0',
+    mockWebServer: 'com.squareup.okhttp3:mockwebserver:5.3.0',
   ]
 
   versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
@@ -63,6 +63,6 @@ subprojects {
     mavenLocal()
   }
   dependencies {
-    testImplementation platform('org.junit:junit-bom:6.0.0')
+    testImplementation platform('org.junit:junit-bom:6.0.1')
   }
 }
