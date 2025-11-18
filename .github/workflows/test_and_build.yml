@@ -11,7 +11,7 @@ on:
         required: true
 
 jobs:
-  test-release:
+  test:
     runs-on: ubuntu-latest
     container:
         image: eclipse-temurin:21-ubi9-minimal
@@ -24,17 +24,31 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          fetch-depth: 0
       - run: microdnf install -y git findutils yum-utils
       - name: Test with Gradle
         run: ./gradlew assemble check
         working-directory: /work
-      - name: Release with Gradle
+
+  githubRelease:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+      - name: Set up JDK
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: gradle
+      - name: Release
         run: ./gradlew githubRelease
-        working-directory: /work
         env:
-          GIT_DISCOVERY_ACROSS_FILESYSTEM: "true"
-          GITHUB_USER: "gocd"
+          GITHUB_USER:  "gocd"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          PRERELEASE: "${{ github.event.inputs.prerelease }}"
+          PRERELEASE:   "${{ github.event.inputs.prerelease }}"
