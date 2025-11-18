@@ -11,7 +11,7 @@ on:
         required: true
 
 jobs:
-  test:
+  test-release:
     runs-on: ubuntu-latest
     container:
         image: eclipse-temurin:21-ubi9-minimal
@@ -33,5 +33,3 @@ jobs:
           GITHUB_USER: "gocd"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           PRERELEASE: "${{ github.event.inputs.prerelease }}"
-
-
