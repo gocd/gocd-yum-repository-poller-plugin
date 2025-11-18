@@ -34,6 +34,7 @@ jobs:
         run: ./gradlew githubRelease
         working-directory: /work
         env:
+          GIT_DISCOVERY_ACROSS_FILESYSTEM: "true"
           GITHUB_USER: "gocd"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           PRERELEASE: "${{ github.event.inputs.prerelease }}"
