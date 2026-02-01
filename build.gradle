@@ -48,7 +48,7 @@ ext {
   deps = [
     gocdPluginApi: 'cd.go.plugin:go-plugin-api:25.4.0',
     commonsIo:     'commons-io:commons-io:2.21.0',
-    commonsCodec:  'commons-codec:commons-codec:1.20.0',
+    commonsCodec:  'commons-codec:commons-codec:1.21.0',
     httpClient:    'org.apache.httpcomponents:httpclient:4.5.14',
     mockito:       'org.mockito:mockito-core:5.21.0',
     mockWebServer: 'com.squareup.okhttp3:mockwebserver:5.3.2',
@@ -63,6 +63,6 @@ subprojects {
     mavenLocal()
   }
   dependencies {
-    testImplementation platform('org.junit:junit-bom:6.0.1')
+    testImplementation platform('org.junit:junit-bom:6.0.2')
   }
 }
