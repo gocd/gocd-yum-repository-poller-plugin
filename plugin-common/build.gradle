@@ -28,7 +28,7 @@ dependencies {
     }
   }
 
-  api 'com.google.code.gson:gson:2.14.0'
+  api 'com.google.code.gson:gson:2.15.0'
   testImplementation project.deps.mockWebServer
   testImplementation project.deps.mockito
   testImplementation 'org.junit.jupiter:junit-jupiter-api'

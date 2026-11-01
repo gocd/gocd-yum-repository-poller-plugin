@@ -48,10 +48,10 @@ ext {
   deps = [
     gocdPluginApi: 'cd.go.plugin:go-plugin-api:26.1.0',
     commonsIo:     'commons-io:commons-io:2.22.0',
-    commonsCodec:  'commons-codec:commons-codec:1.22.1',
+    commonsCodec:  'commons-codec:commons-codec:1.23.0',
     httpClient:    'org.apache.httpcomponents:httpclient:4.5.14',
     mockito:       'org.mockito:mockito-core:5.24.0',
-    mockWebServer: 'com.squareup.okhttp3:mockwebserver:5.5.0',
+    mockWebServer: 'com.squareup.okhttp3:mockwebserver:5.5.1',
   ]
 
   versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
